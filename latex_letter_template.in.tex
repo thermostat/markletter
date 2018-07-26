@@ -1,8 +1,9 @@
 
-\documentclass[draft]{letter}
+\documentclass{letter}
 \usepackage[bottom]{footmisc}
 \usepackage{hyperref}
 \usepackage{setspace}
+\usepackage{graphicx}
 
 \signature{ \VAR{from} }
 
@@ -18,7 +19,15 @@
 
 \VAR{ body }
 \vspace{1 em}
+
 \closing{Sincerly,}
+
+
+\BLOCK{ if sig_image }
+\vspace{-.85in}
+\includegraphics[scale=.4]{signature}
+\BLOCK{ endif }
+
 \end{letter}
 
 

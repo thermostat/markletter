@@ -8,6 +8,7 @@ DEFAULTS = {
     'sig' : os.environ['USER'],
     'to_addr' : 'The world',
     'to_line' : 'Dear sir or madam:',
+    'sig_image' : None,
     'body' : """
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 """
@@ -69,6 +70,8 @@ def create_latex(args, outname=None):
 
 if __name__ == '__main__':
     import sys
+    if sys.argv > 2:
+        DEFAULTS['sig_image'] = sys.argv[2]
     run(sys.argv[1])
 
     
