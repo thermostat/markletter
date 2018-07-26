@@ -9,6 +9,7 @@ DEFAULTS = {
     'to_addr' : 'The world',
     'to_line' : 'Dear sir or madam:',
     'sig_image' : None,
+    'single_space' : False,
     'body' : """
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 """
@@ -34,7 +35,7 @@ def get_md_data(fname):
         elif meta_done == False:
             meta_done = True
         if meta_done:
-            markdown_lines.append(line)
+            markdown_lines.append(line.strip())
     return meta, '\n'.join(markdown_lines)
 
 def get_tex_name(fname):
