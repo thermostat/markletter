@@ -1,7 +1,8 @@
+#!/usr/bin/python3
 
-
+import argparse
 import jinja2
-import pandoc
+import pypandoc
 import os, copy
 
 DEFAULTS = {
@@ -49,10 +50,9 @@ def run(fname):
     args = copy.copy(DEFAULTS)
     file_metadata, markdown_strn = get_md_data(fname)
     args.update(file_metadata)
-    doc = pandoc.Document()
-    doc.markdown = markdown_strn
+    latex_strn = pypandoc.convert_text(markdown_strn, 'latex', format='md')
     tex_name = get_tex_name(fname)
-    args['body'] = doc.latex
+    args['body'] = latex_strn
     create_latex(args, tex_name)
     invoke_pdflatex(tex_name)
 
@@ -63,15 +63,15 @@ def create_latex(args, outname=None):
     templ = latex_jinja_env.get_template('latex_letter_template.in.tex')
     outdata = templ.render(**args)
     if outname:
-        fd = file(outname, 'w')
+        fd = open(outname, 'w')
         fd.write(outdata)
         fd.close()
     else:
-        print outdata
+        print(outdata)
 
 if __name__ == '__main__':
     import sys
-    if sys.argv > 2:
+    if len(sys.argv) > 2:
         DEFAULTS['sig_image'] = sys.argv[2]
     run(sys.argv[1])
 
