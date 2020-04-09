@@ -1,10 +1,17 @@
 #!/usr/bin/python3
 
-import argparse
+###########################################################################
+# Imports; see requirements.txt
+###########################################################################
+
 import jinja2
 import pypandoc
+import argparse
 import os, copy
 
+###########################################################################
+# Defaults set by metadata
+###########################################################################
 DEFAULTS = {
     'sig' : os.environ['USER'],
     'to_addr' : 'The world',
@@ -16,6 +23,10 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 """
 }
 
+
+###########################################################################
+# Static Jinja setup
+###########################################################################
 latex_jinja_env = jinja2.Environment(
     block_start_string = r'\BLOCK{',
     block_end_string = '}',
@@ -24,7 +35,13 @@ latex_jinja_env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.abspath('.')),
 )
 
+###########################################################################
+# Functions
+###########################################################################
 def get_md_data(fname):
+    """
+    Preprocess step for letter metadata
+    """
     fd = open(fname, 'r')
     meta = {}
     markdown_lines = []
@@ -47,6 +64,9 @@ def get_tex_name(fname):
     return "{}/{}.tex".format(path, name)
 
 def run(fname):
+    """
+    Setup the files and invoke pdflatex
+    """
     args = copy.copy(DEFAULTS)
     file_metadata, markdown_strn = get_md_data(fname)
     args.update(file_metadata)
@@ -69,10 +89,18 @@ def create_latex(args, outname=None):
     else:
         print(outdata)
 
+def gen_args():
+    parser = argparse.ArgumentParser(description="Markdown to LaTeX letter")
+    parser.add_argument('file', help='Input markdown file')
+    parser.add_argument('--sig', default=None, help='Signature image file [85 px tall]')
+    args = parser.parse_args()
+    return args
+
 if __name__ == '__main__':
     import sys
-    if len(sys.argv) > 2:
-        DEFAULTS['sig_image'] = sys.argv[2]
-    run(sys.argv[1])
+    args = gen_args()
+    if args.sig:
+        DEFAULTS['sig_image'] = args.sig
+    run(args.file)
 
     
