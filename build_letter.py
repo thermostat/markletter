@@ -13,11 +13,12 @@ import os, copy
 # Defaults set by metadata
 ###########################################################################
 DEFAULTS = {
-    'sig' : os.environ['USER'],
     'to_addr' : 'The world',
     'to_line' : 'Dear sir or madam:',
     'sig_image' : None,
     'single_space' : False,
+    'from' : os.environ['USER'],
+    'closing' : 'Sincerly,',
     'body' : """
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 """
