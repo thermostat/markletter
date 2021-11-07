@@ -32,10 +32,13 @@ The following metadata is used:
 
 See the Dockerfile, work in progress.
 
+## Docker run
+
+Docker image: docker.io/danwilliams42/markletter:0.2
+
 Current docker command is
 
 ```
-docker run --rm -it --mount type=bind,source=${PWD},target=/markletter --entrypoint /bin/sh  markletter
+docker run --rm -it -w /mkl  --mount type=bind,source=${PWD},target=/mkl   markletter:0.2 /mkl/example/yourbrain.md
 ```
 
-Fixing pandoc's entrypoint is TODO.
