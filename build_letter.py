@@ -8,6 +8,7 @@ import jinja2
 import pypandoc
 import argparse
 import os, copy
+import tempfile, shutil
 
 ###########################################################################
 # Defaults set by metadata
@@ -57,25 +58,52 @@ def get_md_data(fname):
             markdown_lines.append(line.strip())
     return meta, '\n'.join(markdown_lines)
 
-def get_tex_name(fname):
+def decompose_path(fname):
+    """
+    Take a name like, /foo/blah/bar.ext
+    into (/foo/bar, bar, ext)
+    """
     path, fn = os.path.split(fname)
     name, ext = os.path.splitext(fn)
+    return (path, name, ext)
+
+def new_ext(fname, newext):
+    path,name,ext = decompose_path(fname)
     if path == '':
         path = '.'
-    return "{}/{}.tex".format(path, name)
+    return "{}/{}.{}".format(path, name, newext)
 
-def run(fname):
+def get_tex_name(fname):
+    return new_ext(fname, 'tex')
+
+def get_pdf_name(fname):
+    return new_ext(fname, 'pdf')
+
+def run(fname, outdir):
     """
     Setup the files and invoke pdflatex
     """
-    args = copy.copy(DEFAULTS)
-    file_metadata, markdown_strn = get_md_data(fname)
-    args.update(file_metadata)
-    latex_strn = pypandoc.convert_text(markdown_strn, 'latex', format='md')
-    tex_name = get_tex_name(fname)
-    args['body'] = latex_strn
-    create_latex(args, tex_name)
-    invoke_pdflatex(tex_name)
+    startdir = os.getcwd()
+    tdir = None
+    try:
+        tdir = tempfile.TemporaryDirectory(prefix='mkl')
+        shutil.copy(fname, tdir.name)
+        os.chdir(tdir.name)
+        args = copy.copy(DEFAULTS)
+        file_metadata, markdown_strn = get_md_data(fname)
+        args.update(file_metadata)
+        latex_strn = pypandoc.convert_text(markdown_strn, 'latex', format='md')
+        tex_name = get_tex_name(fname)
+        args['body'] = latex_strn
+        create_latex(args, tex_name)
+        invoke_pdflatex(tex_name)
+        pdf_name = os.path.basename(get_pdf_name(fname))
+        print("PDF: {}".format(pdf_name))
+        os.listdir('.')
+        shutil.copy(pdf_name, outdir)
+    finally:
+        if tdir != None:
+            shutil.rmtree(tdir.name)
 
 def invoke_pdflatex(tex_name):
     os.system('pdflatex {}'.format(tex_name))
@@ -92,8 +120,14 @@ def create_latex(args, outname=None):
 
 def gen_args():
     parser = argparse.ArgumentParser(description="Markdown to LaTeX letter")
-    parser.add_argument('file', help='Input markdown file')
-    parser.add_argument('--sig', default=None, help='Signature image file [85 px tall]')
+    parser.add_argument('file',
+                        help='Input markdown file')
+    parser.add_argument('--sig',
+                        default=None,
+                        help='Signature image file [85 px tall]')
+    parser.add_argument('--outdir',
+                        default=os.getcwd(),
+                        help='output directory')
     args = parser.parse_args()
     return args
 
@@ -102,6 +136,6 @@ if __name__ == '__main__':
     args = gen_args()
     if args.sig:
         DEFAULTS['sig_image'] = args.sig
-    run(args.file)
+    run(args.file, args.outdir)
 
     
