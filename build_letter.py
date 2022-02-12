@@ -86,11 +86,12 @@ def run(fname, outdir):
     startdir = os.getcwd()
     tdir = None
     try:
+        file_metadata, markdown_strn = get_md_data(fname)
+        
         tdir = tempfile.TemporaryDirectory(prefix='mkl')
         shutil.copy(fname, tdir.name)
         os.chdir(tdir.name)
         args = copy.copy(DEFAULTS)
-        file_metadata, markdown_strn = get_md_data(fname)
         args.update(file_metadata)
         latex_strn = pypandoc.convert_text(markdown_strn, 'latex', format='md')
         tex_name = get_tex_name(fname)
